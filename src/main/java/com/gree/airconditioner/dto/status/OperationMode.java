@@ -1,5 +1,10 @@
 package com.gree.airconditioner.dto.status;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum OperationMode {
     AUTO(0),
     COOL(1),
@@ -7,16 +12,7 @@ public enum OperationMode {
     FAN(3),
     HEAT(4);
 
-    private int status;
-
-    OperationMode(int status) {
-        this.status = status;
-    }
-
-
-    public int getStatus() {
-        return status;
-    }
+    private final int status;
 
     public static OperationMode fromCode(int rawStatus) {
         for (OperationMode value : values()) {

@@ -4,32 +4,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.gree.airconditioner.binding.GreeDeviceBinding;
+import com.gree.airconditioner.models.GreeDeviceBinding;
 import com.gree.airconditioner.dto.status.*;
-import com.gree.airconditioner.util.CryptoUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.gree.airconditioner.utils.CryptoUtil;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import static com.gree.airconditioner.Application.OBJECT_MAPPER;
+
+@Slf4j
+@NoArgsConstructor
+@AllArgsConstructor
 public class ControlRequestPack {
-    private static final Logger log = LogManager.getLogger(ControlRequestPack.class);
-
-    private final GreeDeviceStatus status;
-
-    public ControlRequestPack(GreeDeviceStatus status) {
-        this.status = status;
-    }
+    private GreeDeviceStatus status;
 
     public String toJson() {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode objectNode = mapper.createObjectNode();
+        ObjectNode objectNode = OBJECT_MAPPER.createObjectNode();
         objectNode.put("t", "cmd");
 
-        ArrayNode optNode = mapper.createArrayNode();
-        ArrayNode pNode = mapper.createArrayNode();
+        ArrayNode optNode = OBJECT_MAPPER.createArrayNode();
+        ArrayNode pNode = OBJECT_MAPPER.createArrayNode();
 
         for (Field field : GreeDeviceStatus.class.getDeclaredFields()) {
             String property = getPropertyName(field);
@@ -97,8 +96,7 @@ public class ControlRequestPack {
         String methodName = "get" + name.substring(0, 1).toUpperCase() + name.substring(1);
         try {
             Method method = GreeDeviceStatus.class.getMethod(methodName);
-            Object result = method.invoke(status);
-            return result;
+            return method.invoke(status);
         } catch (NoSuchMethodException e) {
             log.error("Can't find method {}", methodName, e);
         } catch (IllegalAccessException e) {
@@ -109,9 +107,7 @@ public class ControlRequestPack {
         return null;
     }
 
-    public static String build(GreeDeviceStatus status, GreeDeviceBinding binding) {
-        ControlRequestPack pack = new ControlRequestPack(status);
-        String encryptedPack = CryptoUtil.encryptPack(binding.getAesKey().getBytes(), pack.toJson());
-        return encryptedPack;
+    public String encrypted(final String aesKey) {
+        return CryptoUtil.encryptPack(aesKey.getBytes(), this.toJson());
     }
 }

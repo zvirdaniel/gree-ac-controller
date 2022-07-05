@@ -1,23 +1,15 @@
 package com.gree.airconditioner.dto.status;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@Getter
+@RequiredArgsConstructor
 public class Temperature {
     @JsonProperty("SetTem")
-    private Integer temperature;
+    private final Integer temperature;
+
     @JsonProperty("TemUn")
-    private TemperatureUnit unit;
-
-    public Temperature(int temperature, TemperatureUnit unit) {
-        this.temperature = temperature;
-        this.unit = unit;
-    }
-
-    public int getTemperature() {
-        return temperature;
-    }
-
-    public TemperatureUnit getUnit() {
-        return unit;
-    }
+    private final TemperatureUnit unit;
 }

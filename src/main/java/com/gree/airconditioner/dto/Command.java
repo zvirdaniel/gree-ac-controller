@@ -2,10 +2,13 @@ package com.gree.airconditioner.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.io.IOException;
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Command {
     @JsonProperty("t")
@@ -26,71 +29,9 @@ public class Command {
     @JsonProperty("tcid")
     private String tcid;
 
-
-    Command() {
-    }
-
-    public CommandType getCommandType() {
-        return commandType;
-    }
-
-    public void setCommandType(CommandType commandType) {
+    public Command(CommandType commandType) {
         this.commandType = commandType;
     }
-
-    public Long getUid() {
-        return uid;
-    }
-
-    public void setUid(Long uid) {
-        this.uid = uid;
-    }
-
-    public String getCid() {
-        return cid;
-    }
-
-    public void setCid(String cid) {
-        this.cid = cid;
-    }
-
-    public Integer getI() {
-        return i;
-    }
-
-    public void setI(Integer i) {
-        this.i = i;
-    }
-
-    public String getPack() {
-        return pack;
-    }
-
-    public void setPack(String pack) {
-        this.pack = pack;
-    }
-
-    public String getTcid() {
-        return tcid;
-    }
-
-    public void setTcid(String tcid) {
-        this.tcid = tcid;
-    }
-
-    public String toJson() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(this);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static CommandBuilder builder() {
-        return new CommandBuilder();
-    }
-
 
     @Override
     public String toString() {

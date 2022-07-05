@@ -1,19 +1,15 @@
 package com.gree.airconditioner.dto.status;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum TemperatureUnit {
     CELSIUS(0),
     FAHRENHEIT(1);
 
-    private int status;
-
-    TemperatureUnit(int status) {
-        this.status = status;
-    }
-
-
-    public int getStatus() {
-        return status;
-    }
+    private final int status;
 
     public static TemperatureUnit fromCode(int rawStatus) {
         for (TemperatureUnit value : values()) {

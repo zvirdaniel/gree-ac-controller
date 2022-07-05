@@ -1,13 +1,10 @@
 package com.gree.airconditioner.dto.status;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public class SwingDirection {
-    private int status;
-
-    public SwingDirection(int status) {
-        this.status = status;
-    }
-
-    public int getStatus() {
-        return status;
-    }
+    private final int status;
 }

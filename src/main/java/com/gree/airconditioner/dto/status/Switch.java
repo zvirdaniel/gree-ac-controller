@@ -1,18 +1,15 @@
 package com.gree.airconditioner.dto.status;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum Switch {
     OFF(0),
     ON(1);
 
-    private int status;
-
-    Switch(int status) {
-        this.status = status;
-    }
-
-    public int getStatus() {
-        return status;
-    }
+    private final int status;
 
     public static Switch fromCode(int rawStatus) {
         for (Switch value : values()) {

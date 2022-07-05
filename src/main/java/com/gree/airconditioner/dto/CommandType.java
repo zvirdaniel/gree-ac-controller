@@ -2,7 +2,10 @@ package com.gree.airconditioner.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public enum CommandType {
     SCAN("scan"),
     STATUS("status"),
@@ -10,11 +13,7 @@ public enum CommandType {
     BINDOK("bindok"),
     PACK("pack");
 
-    private String code;
-
-    CommandType(String code) {
-        this.code = code;
-    }
+    private final String code;
 
     @JsonCreator
     public CommandType fromCode(String code) {

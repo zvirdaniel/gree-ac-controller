@@ -1,25 +1,19 @@
-package com.gree.airconditioner.util;
+package com.gree.airconditioner.utils;
 
+
+import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Base64;
 
-
+@Slf4j
 public class CryptoUtil {
     static String AES_General_Key = "a3K8Bx%2r8Y7#xDh";
 
-    public static String getAESGeneralKey() {
-        return AES_General_Key;
-    }
-
-    public static byte[] getAESGeneralKeyByteArray() {
-        return AES_General_Key.getBytes();
-    }
-
     public static String decryptPack(String message) {
-        return decryptPack(getAESGeneralKeyByteArray(), message);
+        return decryptPack(AES_General_Key.getBytes(), message);
     }
 
     public static String decryptPack(byte[] keyarray, String message) {
@@ -34,14 +28,14 @@ public class CryptoUtil {
             byte[] bytePlainText = aesCipher.doFinal(imageByte);
 
             descrytpedMessage = new String(bytePlainText);
-        } catch (Exception ex) {
-            System.out.println(ex);
+        } catch (Exception e) {
+            log.error("Decrypt failed!", e);
         }
         return descrytpedMessage;
     }
 
     public static String encryptPack(String message) {
-        return encryptPack(getAESGeneralKeyByteArray(), message);
+        return encryptPack(AES_General_Key.getBytes(), message);
     }
 
     public static String encryptPack(byte[] keyarray, String message) {
@@ -54,8 +48,8 @@ public class CryptoUtil {
 
             Base64.Encoder newencoder = Base64.getEncoder();
             encrytpedMessage = new String(newencoder.encode(bytePlainText));
-        } catch (Exception ex) {
-            System.out.println(ex);
+        } catch (Exception e) {
+            log.error("Encrypt failed!", e);
         }
         return encrytpedMessage;
     }

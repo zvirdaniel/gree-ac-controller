@@ -3,40 +3,33 @@ package com.gree.airconditioner.dto.packs;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gree.airconditioner.binding.GreeDeviceBinding;
+import com.gree.airconditioner.models.GreeDeviceBinding;
 import com.gree.airconditioner.dto.status.*;
-import com.gree.airconditioner.util.CryptoUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.gree.airconditioner.utils.CryptoUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static com.gree.airconditioner.Application.OBJECT_MAPPER;
+
+@Slf4j
+@RequiredArgsConstructor
 public class StatusResponsePack {
-    private static final Logger log = LogManager.getLogger(StatusResponsePack.class);
-
     private final GreeDeviceBinding binding;
     private final String json;
 
-    private StatusResponsePack(String json, GreeDeviceBinding binding) {
-        this.json = json;
-        this.binding = binding;
+    public GreeDeviceStatus asGreeDeviceStatus() {
+        final JsonNode packJsonNode = this.getPackJsonNode();
+        final Map<String, Integer> properties = this.getPropertiesAndValuesAsMap(packJsonNode);
+        return this.getGreeDeviceStatus(properties);
     }
 
-    public GreeDeviceStatus toObject() {
-        JsonNode packJsonNode = getPackJsonNode();
-        Map<String, Integer> properties = getPropertiesAndValuesAsMap(packJsonNode);
-
-        return getGreeDeviceStatus(properties);
-    }
-
-    private GreeDeviceStatus getGreeDeviceStatus(Map<String, Integer> properties) {
+    private GreeDeviceStatus getGreeDeviceStatus(final Map<String, Integer> properties) {
         GreeDeviceStatus status = new GreeDeviceStatus();
         for (Field field : GreeDeviceStatus.class.getDeclaredFields()) {
             String property = getPropertyName(field);
@@ -46,9 +39,7 @@ public class StatusResponsePack {
 
             Integer value = properties.get(property);
             if (value == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("No value set for {}", property);
-                }
+                log.debug("No value set for {}", property);
                 continue;
             }
 
@@ -67,8 +58,7 @@ public class StatusResponsePack {
             String temperatureProperty = getPropertyName(temperatureField);
             Integer temperatureValue = properties.get(temperatureProperty);
 
-            Field unitField = null;
-            unitField = Temperature.class.getDeclaredField("unit");
+            Field unitField = Temperature.class.getDeclaredField("unit");
             String unitProperty = getPropertyName(unitField);
 
             Integer unitValue = properties.get(unitProperty);
@@ -76,7 +66,7 @@ public class StatusResponsePack {
             status.setTemperature(temperature);
 
         } catch (NoSuchFieldException e) {
-            log.error(e);
+            log.error("No such field!", e);
         }
 
         return status;
@@ -87,8 +77,7 @@ public class StatusResponsePack {
         String methodName = "set" + name.substring(0, 1).toUpperCase() + name.substring(1);
         try {
             Method method = GreeDeviceStatus.class.getMethod(methodName, value.getClass());
-            Object result = method.invoke(status, value);
-            return result;
+            return method.invoke(status, value);
         } catch (NoSuchMethodException e) {
             log.error("Can't find method {}", methodName, e);
         } catch (IllegalAccessException e) {
@@ -109,21 +98,19 @@ public class StatusResponsePack {
 
     private JsonNode getPackJsonNode() {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = null;
-            jsonNode = objectMapper.readTree(json);
-            JsonNode packNode = jsonNode.get("pack");
-            String encryptedPack = packNode.asText();
-            String packJson = CryptoUtil.decryptPack(binding.getAesKey().getBytes(), encryptedPack);
-
-            return objectMapper.readTree(packJson);
+            final JsonNode jsonNode = OBJECT_MAPPER.readTree(json);
+            final JsonNode packNode = jsonNode.get("pack");
+            final String encryptedPack = packNode.asText();
+            final String packJson = CryptoUtil.decryptPack(binding.getAesKey().getBytes(), encryptedPack);
+            return OBJECT_MAPPER.readTree(packJson);
         } catch (IOException e) {
             log.error("Can't get pack from json {}", json, e);
+            return null;
         }
-        return null;
     }
 
-    private Map<String, Integer> getPropertiesAndValuesAsMap(JsonNode packJsonNode) {
+    private Map<String, Integer> getPropertiesAndValuesAsMap(final JsonNode packJsonNode) {
+        Objects.requireNonNull(packJsonNode);
         Map<String, Integer> properties = new HashMap<>();
         JsonNode colsNode = packJsonNode.get("cols");
         List<String> colsList = new LinkedList<>();
@@ -143,9 +130,5 @@ public class StatusResponsePack {
         }
 
         return properties;
-    }
-
-    public static StatusResponsePack build(String json, GreeDeviceBinding binding) {
-        return new StatusResponsePack(json, binding);
     }
 }
