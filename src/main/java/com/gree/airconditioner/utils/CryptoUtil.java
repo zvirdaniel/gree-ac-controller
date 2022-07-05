@@ -12,45 +12,38 @@ import java.util.Base64;
 public class CryptoUtil {
     static String AES_General_Key = "a3K8Bx%2r8Y7#xDh";
 
-    public static String decryptPack(String message) {
+    public static String decryptPack(final String message) {
         return decryptPack(AES_General_Key.getBytes(), message);
     }
 
-    public static String decryptPack(byte[] keyarray, String message) {
-        String descrytpedMessage = null;
+    public static String decryptPack(final byte[] keyArray, final String message) {
         try {
-            Key key = new SecretKeySpec(keyarray, "AES");
-            Base64.Decoder decoder = Base64.getDecoder();
-            byte[] imageByte = decoder.decode(message);
-
-            Cipher aesCipher = Cipher.getInstance("AES");
+            final Key key = new SecretKeySpec(keyArray, "AES");
+            final byte[] imageByte = Base64.getDecoder().decode(message);
+            final Cipher aesCipher = Cipher.getInstance("AES");
             aesCipher.init(Cipher.DECRYPT_MODE, key);
-            byte[] bytePlainText = aesCipher.doFinal(imageByte);
-
-            descrytpedMessage = new String(bytePlainText);
+            final byte[] bytePlainText = aesCipher.doFinal(imageByte);
+            return new String(bytePlainText);
         } catch (Exception e) {
             log.error("Decrypt failed!", e);
+            return null;
         }
-        return descrytpedMessage;
     }
 
-    public static String encryptPack(String message) {
+    public static String encryptPack(final String message) {
         return encryptPack(AES_General_Key.getBytes(), message);
     }
 
-    public static String encryptPack(byte[] keyarray, String message) {
-        String encrytpedMessage = null;
+    public static String encryptPack(final byte[] keyArray, final String message) {
         try {
-            Key key = new SecretKeySpec(keyarray, "AES");
-            Cipher aesCipher = Cipher.getInstance("AES");
+            final Key key = new SecretKeySpec(keyArray, "AES");
+            final Cipher aesCipher = Cipher.getInstance("AES");
             aesCipher.init(Cipher.ENCRYPT_MODE, key);
-            byte[] bytePlainText = aesCipher.doFinal(message.getBytes());
-
-            Base64.Encoder newencoder = Base64.getEncoder();
-            encrytpedMessage = new String(newencoder.encode(bytePlainText));
+            final byte[] bytePlainText = aesCipher.doFinal(message.getBytes());
+            return new String(Base64.getEncoder().encode(bytePlainText));
         } catch (Exception e) {
             log.error("Encrypt failed!", e);
+            return null;
         }
-        return encrytpedMessage;
     }
 }

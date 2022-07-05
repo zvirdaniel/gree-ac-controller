@@ -1,6 +1,5 @@
 package com.gree.airconditioner.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gree.airconditioner.models.GreeDevice;
 import com.gree.airconditioner.dto.Command;
 import com.gree.airconditioner.utils.CommandBuilder;
@@ -31,7 +30,7 @@ public class GreeDeviceBinderService {
 
     public GreeDeviceBinding getBinding(final GreeDevice device) {
         log.debug("Attempting to bind with {}", device.getAddress());
-        GreeDeviceBinding greeDeviceBinding = bindings.get(device);
+        final GreeDeviceBinding greeDeviceBinding = bindings.get(device);
         if (greeDeviceBinding != null) {
             long bindingCreationTime = greeDeviceBinding.getCreationDate().getTime();
             long nowTime = GregorianCalendar.getInstance().getTime().getTime();
@@ -47,28 +46,20 @@ public class GreeDeviceBinderService {
 
 
     private GreeDeviceBinding sendBindCommand(GreeDevice device, Command bindCommand) {
-        final String response = communicationService.sendCommand(device, bindCommand);
-        final BindResponsePack responsePack = this.decrypt(response);
-        if (responsePack == null) {
-            return null;
-        }
-        if (CommandType.BINDOK.getCode().equalsIgnoreCase(responsePack.getT())) {
-            log.debug("Bind with device at {} successful", device.getAddress().getHostAddress());
-            return new GreeDeviceBinding(device, responsePack.getKey());
-        } else {
-            throw new RuntimeException("Binding " + device + " failed!");
-        }
-    }
-
-    private BindResponsePack decrypt(final String input) {
+        final BindResponsePack responsePack;
         try {
-            final CommandResponse response = OBJECT_MAPPER.readValue(input, CommandResponse.class);
-            final String encryptedPack = response.getPack();
-            final String decryptedPack = CryptoUtil.decryptPack(encryptedPack);
-            return OBJECT_MAPPER.readValue(decryptedPack, BindResponsePack.class);
+            final String response = communicationService.sendCommand(device, bindCommand);
+            final CommandResponse cmdResponse = OBJECT_MAPPER.readValue(response, CommandResponse.class);
+            final String decryptedPack = CryptoUtil.decryptPack(cmdResponse.getPack());
+            responsePack = OBJECT_MAPPER.readValue(decryptedPack, BindResponsePack.class);
         } catch (IOException e) {
-            log.error("Can't map binding response to command response", e);
-            return null;
+            throw new RuntimeException("Binding " + device + " failed!", e);
         }
+        if (!CommandType.BINDOK.getCode().equalsIgnoreCase(responsePack.getT())) {
+            throw new RuntimeException("Binding " + device + " failed! Returned status: " + responsePack.getT());
+        }
+
+        log.debug("Bind with device at {} successful", device.getAddress().getHostAddress());
+        return new GreeDeviceBinding(device, responsePack.getKey());
     }
 }

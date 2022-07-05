@@ -56,7 +56,7 @@ public class GreeDeviceFinderService {
     }
 
     public List<GreeDevice> searchByAddress(final InetAddress broadcastAddress) throws IOException {
-        log.info("Searching devices on broadcast {}, {}ms timeout", broadcastAddress.getHostAddress(), datagramSocket.getSoTimeout());
+        log.info("Searching for devices on broadcast {}, {}ms timeout", broadcastAddress, datagramSocket.getSoTimeout());
 
         final Command command = new Command(CommandType.SCAN);
         byte[] scanCommand = OBJECT_MAPPER.writeValueAsString(command).getBytes();
@@ -65,14 +65,14 @@ public class GreeDeviceFinderService {
         try {
             datagramSocket.send(sendPacket);
         } catch (IOException e) {
-            log.error("Can't send packet", e);
+            log.error("Can't send packet to {}", broadcastAddress, e);
         }
 
         final List<GreeDevice> devices = new ArrayList<>();
 
         byte[] receiveData = new byte[1024];
-        boolean timeoutRecieved = false;
-        while (!timeoutRecieved) {
+        boolean timeoutReceived = false;
+        while (!timeoutReceived) {
             // Receive a response
             final DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             try {
@@ -99,10 +99,11 @@ public class GreeDeviceFinderService {
                 devices.add(device);
                 log.info("Found device {}", device);
             } catch (SocketTimeoutException e) {
-                timeoutRecieved = true;
+                timeoutReceived = true;
             }
         }
-        log.info("Found {} devices on {}", devices.size(), broadcastAddress.getHostAddress());
+
+        log.info("Found {} devices on broadcast {}", devices.size(), broadcastAddress);
         return devices;
     }
 }

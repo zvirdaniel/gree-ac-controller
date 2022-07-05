@@ -37,7 +37,6 @@ public class ControlRequestPack {
                 continue;
             }
 
-
             if (value instanceof Integer) {
                 optNode.add(property);
                 pNode.add((Integer) value);
