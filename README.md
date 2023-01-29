@@ -1,11 +1,13 @@
-# REST API for Gree Airconditioner
+# Smart home REST API
 
-A REST Interface for controlling a Gree Airconditioner. The code is written in Java based on the hard work from the guys working on and contributing to https://github.com/tomikaa87/gree-remote. I take no credit for the research that went into understanding how the interface works. Thanks a lot guys for your research!
+REST interface to control my home devices, such as Gree AC. 
+
+The code is written in Java based on the hard work from the guys working on https://github.com/tomikaa87/gree-remote. I take no credit for the research that went into understanding how the interface works.
 
 ## Required
 
-- at least maven 3.5 
-- java 8
+- maven
+- java 17
 
 ## Build
 
@@ -16,18 +18,18 @@ mvn clean install
 ## Run
 
 ```
-java -jar target/airconditioner-remote-1.0-SNAPSHOT.jar 
-// if it's not working just check the name of the jar in target folder
+java -jar target/smart-home-VERSION.jar 
 ```
 
 ## Where can I see the API?
 
-We have swagger and here it is:
 ```
 http://localhost:8081/swagger-ui.html
 ```
 
-## Run it on a different port
+### Docker build AMD64 on ARM computers 
 
-The app is written using Spring Boot.  
-Just search for additional parameters for Spring Boot on google and you'll figure it out :)
+```
+change directory to project root
+docker build -t zvirdaniel/smart-home:1.0 --platform=linux/amd64 .
+```
