@@ -27,9 +27,10 @@ java -jar target/smart-home-VERSION.jar
 http://localhost:8081/swagger-ui.html
 ```
 
-### Docker build AMD64 on ARM computers 
+### Docker build AMD64 on ARM computers and upload 
 
 ```
 change directory to project root
 docker build -t zvirdaniel/smart-home:1.0 --platform=linux/amd64 .
+docker push zvirdaniel/smart-home:1.0 
 ```
