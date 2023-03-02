@@ -1,6 +1,8 @@
 package cz.zvirdaniel.smarthome.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.zvirdaniel.smarthome.configs.StatusEnumSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,15 +17,18 @@ public class GreeDeviceStatus {
 	private Boolean power;
 
 	@JsonProperty("Mod")
+	@JsonSerialize(using = StatusEnumSerializer.class)
 	private OperationMode operationMode;
 
 	@JsonProperty("SetTem")
 	private Integer temperature;
 
 	@JsonProperty("TemUn")
+	@JsonSerialize(using = StatusEnumSerializer.class)
 	private TemperatureUnit temperatureUnit;
 
 	@JsonProperty("WdSpd")
+	@JsonSerialize(using = StatusEnumSerializer.class)
 	private FanSpeed fanSpeed;
 
 	@JsonProperty("Air")
@@ -42,9 +47,11 @@ public class GreeDeviceStatus {
 	private Boolean lightIndicator;
 
 	@JsonProperty("SwUpDn")
+	@JsonSerialize(using = StatusEnumSerializer.class)
 	private VerticalSwingDirection verticalSwingDirection;
 
 	@JsonProperty("SwingLfRig")
+	@JsonSerialize(using = StatusEnumSerializer.class)
 	private HorizontalSwingDirection horizontalSwingDirection;
 
 	@JsonProperty("Quiet")

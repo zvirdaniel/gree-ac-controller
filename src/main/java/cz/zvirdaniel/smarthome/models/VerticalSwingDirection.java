@@ -1,6 +1,6 @@
 package cz.zvirdaniel.smarthome.models;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +22,18 @@ public enum VerticalSwingDirection implements StatusEnum {
     SWING_MIDDLE_LOW_POSITION(8),
     SWING_LOWEST_POSITION(7);
 
-    @JsonValue
     private final int status;
+
+    @JsonCreator
+    public static VerticalSwingDirection forStatus(Integer status) {
+        if (status != null) {
+            for (final var value : values()) {
+                if (value.getStatus() == status) {
+                    return value;
+                }
+            }
+        }
+
+        return null;
+    }
 }

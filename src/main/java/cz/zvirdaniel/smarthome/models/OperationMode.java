@@ -1,6 +1,6 @@
 package cz.zvirdaniel.smarthome.models;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,6 +13,18 @@ public enum OperationMode implements StatusEnum {
     FAN(3),
     HEAT(4);
 
-    @JsonValue
     private final int status;
+
+    @JsonCreator
+    public static OperationMode forStatus(Integer status) {
+        if (status != null) {
+            for (final var value : values()) {
+                if (value.getStatus() == status) {
+                    return value;
+                }
+            }
+        }
+
+        return null;
+    }
 }
