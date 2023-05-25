@@ -12,21 +12,21 @@ import lombok.Getter;
 @Data
 @Getter
 public class GreeData {
-	@JsonProperty("t")
-	private GreeType type;
+    @JsonProperty("t")
+    private GreeType type;
 
-	@JsonProperty("uid")
-	private Long uid;
+    @JsonProperty("uid")
+    private Long uid;
 
-	@JsonProperty("cid")
-	private String cid;
+    @JsonProperty("cid")
+    private String cid;
 
-	@JsonProperty("i")
-	private Integer i;
+    @JsonProperty("i")
+    private Integer i;
 
-	@JsonProperty("pack")
-	private String encryptedContent;
+    @JsonProperty("pack")
+    private String encryptedContent;
 
-	@JsonProperty("tcid")
-	private String tcid;
+    @JsonProperty("tcid")
+    private String tcid;
 }

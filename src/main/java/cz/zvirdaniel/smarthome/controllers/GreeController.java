@@ -1,8 +1,9 @@
 package cz.zvirdaniel.smarthome.controllers;
 
-import cz.zvirdaniel.smarthome.models.GreeDevice;
+import cz.zvirdaniel.smarthome.models.FanSpeed;
 import cz.zvirdaniel.smarthome.models.GreeDeviceDetail;
 import cz.zvirdaniel.smarthome.models.HorizontalSwingDirection;
+import cz.zvirdaniel.smarthome.models.OperationMode;
 import cz.zvirdaniel.smarthome.models.VerticalSwingDirection;
 import cz.zvirdaniel.smarthome.services.GreeService;
 import lombok.RequiredArgsConstructor;
@@ -18,42 +19,52 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 public class GreeController {
-	private final GreeService service;
+    private final GreeService service;
 
-	@GetMapping("/devices")
-	public List<GreeDeviceDetail> getDevices() {
-		return service.getDevices().stream()
-		              .map(service::getStatus)
-		              .collect(Collectors.toList());
-	}
+    @GetMapping("/devices")
+    public List<GreeDeviceDetail> getDevices() {
+        return service.getGreeDevices().stream()
+                      .map(service::getStatus)
+                      .collect(Collectors.toList());
+    }
 
-	@GetMapping("/device-status/{mac}")
-	public GreeDeviceDetail getStatus(@PathVariable String mac) {
-		return service.getStatus(this.service.getDeviceByMac(mac));
-	}
+    @GetMapping("/device-status/{mac}")
+    public GreeDeviceDetail getStatus(@PathVariable String mac) {
+        return service.getStatus(service.getDeviceArray(mac)[0]);
+    }
 
-	@PatchMapping("/power/{mac}")
-	public GreeDeviceDetail changePowerStatus(@PathVariable String mac,
-	                                          @RequestParam Boolean online) {
-		final GreeDevice device = service.getDeviceByMac(mac);
-		service.changePowerStatus(device, online);
-		return service.getStatus(device);
-	}
+    @PatchMapping("/operation-mode")
+    public List<GreeDeviceDetail> changeOperationMode(@RequestParam OperationMode mode) {
+        service.changeOperationMode(mode);
+        return this.getDevices();
+    }
 
-	@PatchMapping("/temperature/{mac}")
-	public GreeDeviceDetail changeTemperature(@PathVariable String mac,
-	                                          @RequestParam Integer temperature) {
-		final GreeDevice device = service.getDeviceByMac(mac);
-		service.changeTemperature(device, temperature);
-		return service.getStatus(device);
-	}
+    @PatchMapping("/power")
+    public List<GreeDeviceDetail> changePowerStatus(@RequestParam(required = false) String mac,
+                                                    @RequestParam Boolean online) {
+        service.changePowerStatus(mac, online);
+        return this.getDevices();
+    }
 
-	@PatchMapping("/swing/{mac}")
-	public GreeDeviceDetail changeTemperature(@PathVariable String mac,
-	                                          @RequestParam HorizontalSwingDirection horizontalSwingDirection,
-	                                          @RequestParam VerticalSwingDirection verticalSwingDirection) {
-		final GreeDevice device = service.getDeviceByMac(mac);
-		service.changeSwing(device, horizontalSwingDirection, verticalSwingDirection);
-		return service.getStatus(device);
-	}
+    @PatchMapping("/temperature")
+    public List<GreeDeviceDetail> changeTemperature(@RequestParam(required = false) String mac,
+                                                    @RequestParam Integer temperature) {
+        service.changeTemperature(mac, temperature);
+        return this.getDevices();
+    }
+
+    @PatchMapping("/fan-speed")
+    public List<GreeDeviceDetail> changeFanSpeed(@RequestParam(required = false) String mac,
+                                                 @RequestParam FanSpeed fanSpeed) {
+        service.changeFanSpeed(mac, fanSpeed);
+        return this.getDevices();
+    }
+
+    @PatchMapping("/swing")
+    public List<GreeDeviceDetail> changeTemperature(@RequestParam(required = false) String mac,
+                                                    @RequestParam HorizontalSwingDirection horizontalSwingDirection,
+                                                    @RequestParam VerticalSwingDirection verticalSwingDirection) {
+        service.changeSwing(mac, horizontalSwingDirection, verticalSwingDirection);
+        return this.getDevices();
+    }
 }

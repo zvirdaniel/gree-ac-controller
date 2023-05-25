@@ -6,12 +6,12 @@ import lombok.Data;
 
 @Data
 public class GreeCommandContent {
-	@JsonProperty("t")
-	private GreeType type;
+    @JsonProperty("t")
+    private GreeType type;
 
-	@JsonProperty("opt")
-	private String[] columns;
+    @JsonProperty("opt")
+    private String[] columns;
 
-	@JsonProperty("p")
-	private Object[] data;
+    @JsonProperty("p")
+    private Object[] data;
 }

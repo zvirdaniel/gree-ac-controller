@@ -8,12 +8,12 @@ import cz.zvirdaniel.smarthome.models.StatusEnum;
 import java.io.IOException;
 
 public class StatusEnumSerializer extends StdSerializer<StatusEnum> {
-	public StatusEnumSerializer() {
-		super(StatusEnum.class);
-	}
+    public StatusEnumSerializer() {
+        super(StatusEnum.class);
+    }
 
-	@Override
-	public void serialize(StatusEnum value, JsonGenerator generator, SerializerProvider provider) throws IOException {
-		generator.writeNumber(value.getStatus());
-	}
+    @Override
+    public void serialize(StatusEnum value, JsonGenerator generator, SerializerProvider provider) throws IOException {
+        generator.writeNumber(value.getStatus());
+    }
 }

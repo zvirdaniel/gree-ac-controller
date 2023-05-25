@@ -13,56 +13,56 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GreeDeviceStatus {
-	@JsonProperty("Pow")
-	private Boolean power;
+    @JsonProperty("Pow")
+    private Boolean power;
 
-	@JsonProperty("Mod")
-	@JsonSerialize(using = StatusEnumSerializer.class)
-	private OperationMode operationMode;
+    @JsonProperty("Mod")
+    @JsonSerialize(using = StatusEnumSerializer.class)
+    private OperationMode operationMode;
 
-	@JsonProperty("SetTem")
-	private Integer temperature;
+    @JsonProperty("SetTem")
+    private Integer temperature;
 
-	@JsonProperty("TemUn")
-	@JsonSerialize(using = StatusEnumSerializer.class)
-	private TemperatureUnit temperatureUnit;
+    @JsonProperty("TemUn")
+    @JsonSerialize(using = StatusEnumSerializer.class)
+    private TemperatureUnit temperatureUnit;
 
-	@JsonProperty("WdSpd")
-	@JsonSerialize(using = StatusEnumSerializer.class)
-	private FanSpeed fanSpeed;
+    @JsonProperty("WdSpd")
+    @JsonSerialize(using = StatusEnumSerializer.class)
+    private FanSpeed fanSpeed;
 
-	@JsonProperty("Air")
-	private Boolean air;
+    @JsonProperty("Air")
+    private Boolean air;
 
-	@JsonProperty("Blo")
-	private Boolean xFan;
+    @JsonProperty("Blo")
+    private Boolean xFan;
 
-	@JsonProperty("Health")
-	private Boolean coldPlasmaGenerator;
+    @JsonProperty("Health")
+    private Boolean coldPlasmaGenerator;
 
-	@JsonProperty("SwhSlp")
-	private Boolean sleepMode;
+    @JsonProperty("SwhSlp")
+    private Boolean sleepMode;
 
-	@JsonProperty("Lig")
-	private Boolean lightIndicator;
+    @JsonProperty("Lig")
+    private Boolean lightIndicator;
 
-	@JsonProperty("SwUpDn")
-	@JsonSerialize(using = StatusEnumSerializer.class)
-	private VerticalSwingDirection verticalSwingDirection;
+    @JsonProperty("SwUpDn")
+    @JsonSerialize(using = StatusEnumSerializer.class)
+    private VerticalSwingDirection verticalSwingDirection;
 
-	@JsonProperty("SwingLfRig")
-	@JsonSerialize(using = StatusEnumSerializer.class)
-	private HorizontalSwingDirection horizontalSwingDirection;
+    @JsonProperty("SwingLfRig")
+    @JsonSerialize(using = StatusEnumSerializer.class)
+    private HorizontalSwingDirection horizontalSwingDirection;
 
-	@JsonProperty("Quiet")
-	private Boolean quiet;
+    @JsonProperty("Quiet")
+    private Boolean quiet;
 
-	@JsonProperty("Tur")
-	private Boolean turbo;
+    @JsonProperty("Tur")
+    private Boolean turbo;
 
-	@JsonProperty("SvSt")
-	private Boolean energySavingMode;
+    @JsonProperty("SvSt")
+    private Boolean energySavingMode;
 
-	@JsonProperty("StHt")
-	private Boolean winterMaintenanceMode;
+    @JsonProperty("StHt")
+    private Boolean winterMaintenanceMode;
 }

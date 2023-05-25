@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class GreeScanRequest extends GreeData implements GreeRequest {
-	public GreeScanRequest() {
-		super.setType(GreeType.SCAN);
-	}
+    public GreeScanRequest() {
+        super.setType(GreeType.SCAN);
+    }
 }

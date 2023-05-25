@@ -10,15 +10,15 @@ import java.util.GregorianCalendar;
 @Data
 @RequiredArgsConstructor
 public class GreeDeviceBinding {
-	private final GreeDevice device;
-	private final String aesKey;
-	private final Date creationDate = GregorianCalendar.getInstance().getTime();
+    private final GreeDevice device;
+    private final String aesKey;
+    private final Date creationDate = GregorianCalendar.getInstance().getTime();
 
-	public String decryptContent(String encryptedContent) {
-		return CryptoUtil.decryptContent(this.getAesKey(), encryptedContent);
-	}
+    public String decryptContent(String encryptedContent) {
+        return CryptoUtil.decryptContent(this.getAesKey(), encryptedContent);
+    }
 
-	public String encryptContent(String content) {
-		return CryptoUtil.encryptContent(this.getAesKey(), content);
-	}
+    public String encryptContent(String content) {
+        return CryptoUtil.encryptContent(this.getAesKey(), content);
+    }
 }
