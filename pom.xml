@@ -6,7 +6,7 @@
 
     <groupId>cz.dazv</groupId>
     <artifactId>smart-home</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
 
     <properties>
         <java.version>17</java.version>

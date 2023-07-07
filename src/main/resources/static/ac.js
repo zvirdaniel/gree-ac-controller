@@ -68,6 +68,62 @@ function updateGreeDeviceData(option, params) {
         .catch(error => console.log('Error:', error));
 }
 
+function togglePowerState(evt) {
+    evt.preventDefault()
+
+    // Update the power state on the server
+    let params = new URLSearchParams({
+        mac: deviceMac,
+        online: !isPowerOn,
+    });
+    updateGreeDeviceData('power', params);
+}
+
+function updateTemperatureUp(evt) {
+    evt.preventDefault()
+
+    // Update the temperature on the server
+    let params = new URLSearchParams({
+        mac: deviceMac,
+        temperature: ++temperature,
+    });
+    updateGreeDeviceData('temperature', params);
+}
+
+function updateTemperatureDown(evt) {
+    evt.preventDefault()
+
+    // Update the temperature on the server
+    let params = new URLSearchParams({
+        mac: deviceMac,
+        temperature: --temperature,
+    });
+    updateGreeDeviceData('temperature', params);
+}
+
+function updateWindSpeed(evt) {
+    evt.preventDefault()
+
+    // Update wind speed on the server
+    let params = new URLSearchParams({
+        mac: deviceMac,
+        fanSpeed: windSpeedSelect.value
+    });
+    updateGreeDeviceData('fan-speed', params);
+}
+
+function updateSwingDirections(evt) {
+    evt.preventDefault()
+
+    // Update swing directions on the server
+    let params = new URLSearchParams({
+        mac: deviceMac,
+        horizontalSwingDirection: horizontalSwingSelect.value,
+        verticalSwingDirection: verticalSwingSelect.value
+    });
+    updateGreeDeviceData('swing', params);
+}
+
 // Event listeners
 deviceSelect.addEventListener('change', function () {
     deviceMac = deviceSelect.value;
@@ -75,68 +131,25 @@ deviceSelect.addEventListener('change', function () {
     fetchGreeDeviceData();
 });
 
-powerButton.addEventListener('click', function () {
-    // Update the power state on the server
-    let params = new URLSearchParams({
-        mac: deviceMac,
-        online: !isPowerOn,
-    });
-    updateGreeDeviceData('power', params);
-});
+powerButton.addEventListener('click', togglePowerState);
+powerButton.addEventListener('touchstart', togglePowerState);
 
-increaseTempButton.addEventListener('click', function () {
-    // Update the temperature on the server
-    let params = new URLSearchParams({
-        mac: deviceMac,
-        temperature: ++temperature,
-    });
-    updateGreeDeviceData('temperature', params);
-});
+increaseTempButton.addEventListener('click', updateTemperatureUp);
+increaseTempButton.addEventListener('touchstart', updateTemperatureUp);
 
-decreaseTempButton.addEventListener('click', function () {
-    // Update the temperature on the server
-    let params = new URLSearchParams({
-        mac: deviceMac,
-        temperature: --temperature,
-    });
-    updateGreeDeviceData('temperature', params);
-});
+decreaseTempButton.addEventListener('click', updateTemperatureDown);
+decreaseTempButton.addEventListener('touchstart', updateTemperatureDown);
 
-windSpeedSelect.addEventListener('change', function () {
-    // Update wind speed on the server
-    let params = new URLSearchParams({
-        mac: deviceMac,
-        fanSpeed: windSpeedSelect.value
-    });
-    updateGreeDeviceData('fan-speed', params);
-});
-
-horizontalSwingSelect.addEventListener('change', function () {
-    // Update swing directions on the server
-    let params = new URLSearchParams({
-        mac: deviceMac,
-        horizontalSwingDirection: horizontalSwingSelect.value,
-        verticalSwingDirection: verticalSwingSelect.value
-    });
-    updateGreeDeviceData('swing', params);
-});
-
-verticalSwingSelect.addEventListener('change', function () {
-    // Update swing directions on the server
-    let params = new URLSearchParams({
-        mac: deviceMac,
-        horizontalSwingDirection: horizontalSwingSelect.value,
-        verticalSwingDirection: verticalSwingSelect.value
-    });
-    updateGreeDeviceData('swing', params);
-});
+windSpeedSelect.addEventListener('change', updateWindSpeed);
+horizontalSwingSelect.addEventListener('change', updateSwingDirections);
+verticalSwingSelect.addEventListener('change', updateSwingDirections);
 
 // Select last used device
 const lastDeviceMac = Cookies.get(LAST_DEVICE_COOKIE_NAME);
 if (lastDeviceMac != null) {
     found = false;
-    for (i = 0; i < deviceSelect.length; ++i){
-        if (deviceSelect.options[i].value === lastDeviceMac){
+    for (i = 0; i < deviceSelect.length; ++i) {
+        if (deviceSelect.options[i].value === lastDeviceMac) {
             deviceSelect.options[i].selected = true;
             found = true;
             break;
@@ -147,6 +160,8 @@ if (lastDeviceMac != null) {
         Cookies.remove(LAST_DEVICE_COOKIE_NAME);
     }
 }
+
+deviceMac = deviceSelect.value;
 
 // Initial data fetch
 fetchGreeDeviceData();
