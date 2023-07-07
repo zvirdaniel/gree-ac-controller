@@ -1,6 +1,8 @@
 package cz.zvirdaniel.smarthome.utils;
 
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
@@ -9,7 +11,8 @@ import java.security.Key;
 import java.util.Base64;
 
 @Slf4j
-public class CryptoUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CryptoUtil {
     public static String AES_General_Key = "a3K8Bx%2r8Y7#xDh";
 
     public static String decryptContent(String aesKey, String message) {
@@ -21,8 +24,7 @@ public class CryptoUtil {
             final byte[] bytePlainText = aesCipher.doFinal(imageByte);
             return new String(bytePlainText);
         } catch (Exception e) {
-            log.error("Decrypt failed!", e);
-            return null;
+            throw new RuntimeException("Decryption failed!", e);
         }
     }
 
@@ -34,8 +36,7 @@ public class CryptoUtil {
             final byte[] bytePlainText = aesCipher.doFinal(message.getBytes());
             return new String(Base64.getEncoder().encode(bytePlainText));
         } catch (Exception e) {
-            log.error("Encrypt failed!", e);
-            return null;
+            throw new RuntimeException("Encryption failed!", e);
         }
     }
 }

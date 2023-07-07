@@ -1,0 +1,45 @@
+spring:
+  thymeleaf:
+    cache: false
+    enabled: true
+    prefix: classpath:/templates/
+    suffix: .html
+  application:
+    name: Smart Home
+
+gree:
+  timeout: 5000
+  devices:
+    502cc6579766:
+      name: AC Living Room
+    502cc6561059:
+      name: AC Bedroom
+    502cc6da649c:
+      name: AC Right Room
+    502cc6b4fe55:
+      name: AC Left Room
+
+homekit:
+  active: false
+  port: 9123
+  pin: 031-45-154
+  bridge-label: Smart Home Bridge
+  manufacturer: Daniel Zvir
+  model: V1
+  serial-number: DKR769
+  hardware-revision: 1.0
+
+logging:
+  level:
+    cz.zvirdaniel.smarthome: INFO
+    root: ERROR
+
+server:
+  error.include-message: always
+  port: 8080
+  servlet.context-path: /smart-home
+
+springdoc:
+  swagger-ui:
+    displayRequestDuration: true
+    tryItOutEnabled: true

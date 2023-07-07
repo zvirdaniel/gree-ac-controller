@@ -1,8 +1,13 @@
-package cz.zvirdaniel.smarthome.models;
+package cz.zvirdaniel.smarthome.models.gree;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.zvirdaniel.smarthome.configs.StatusEnumSerializer;
+import cz.zvirdaniel.smarthome.models.gree.enums.FanSpeed;
+import cz.zvirdaniel.smarthome.models.gree.enums.HorizontalSwingDirection;
+import cz.zvirdaniel.smarthome.models.gree.enums.OperationMode;
+import cz.zvirdaniel.smarthome.models.gree.enums.TemperatureUnit;
+import cz.zvirdaniel.smarthome.models.gree.enums.VerticalSwingDirection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +24,9 @@ public class GreeDeviceStatus {
     @JsonProperty("Mod")
     @JsonSerialize(using = StatusEnumSerializer.class)
     private OperationMode operationMode;
+
+    @JsonProperty("TemSen")
+    private Integer temperatureSensor;
 
     @JsonProperty("SetTem")
     private Integer temperature;
@@ -65,4 +73,12 @@ public class GreeDeviceStatus {
 
     @JsonProperty("StHt")
     private Boolean winterMaintenanceMode;
+
+    public void setTemperatureSensor(Integer temperatureSensor) {
+        if (temperatureSensor == null || temperatureSensor <= 0) {
+            this.temperatureSensor = null;
+        } else {
+            this.temperatureSensor = temperatureSensor - 40;
+        }
+    }
 }

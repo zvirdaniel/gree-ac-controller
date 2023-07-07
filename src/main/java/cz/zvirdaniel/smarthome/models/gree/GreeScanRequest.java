@@ -1,7 +1,6 @@
-package cz.zvirdaniel.smarthome.models.requests;
+package cz.zvirdaniel.smarthome.models.gree;
 
-import cz.zvirdaniel.smarthome.models.GreeData;
-import cz.zvirdaniel.smarthome.models.GreeType;
+import cz.zvirdaniel.smarthome.models.gree.enums.GreeType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

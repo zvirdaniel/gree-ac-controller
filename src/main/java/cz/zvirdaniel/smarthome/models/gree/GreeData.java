@@ -1,6 +1,7 @@
-package cz.zvirdaniel.smarthome.models;
+package cz.zvirdaniel.smarthome.models.gree;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import cz.zvirdaniel.smarthome.models.gree.enums.GreeType;
 import lombok.Data;
 import lombok.Getter;
 

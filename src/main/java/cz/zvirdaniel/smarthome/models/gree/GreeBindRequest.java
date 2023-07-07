@@ -1,10 +1,8 @@
-package cz.zvirdaniel.smarthome.models.requests;
+package cz.zvirdaniel.smarthome.models.gree;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.zvirdaniel.smarthome.Application;
-import cz.zvirdaniel.smarthome.models.GreeData;
-import cz.zvirdaniel.smarthome.models.GreeType;
-import cz.zvirdaniel.smarthome.models.contents.GreeBindContent;
+import cz.zvirdaniel.smarthome.models.gree.enums.GreeType;
 import cz.zvirdaniel.smarthome.utils.CryptoUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

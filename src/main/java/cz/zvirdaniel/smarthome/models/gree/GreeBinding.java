@@ -1,4 +1,4 @@
-package cz.zvirdaniel.smarthome.models;
+package cz.zvirdaniel.smarthome.models.gree;
 
 import cz.zvirdaniel.smarthome.utils.CryptoUtil;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.util.GregorianCalendar;
 
 @Data
 @RequiredArgsConstructor
-public class GreeDeviceBinding {
+public class GreeBinding {
     private final GreeDevice device;
     private final String aesKey;
     private final Date creationDate = GregorianCalendar.getInstance().getTime();

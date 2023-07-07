@@ -1,34 +1,32 @@
 package cz.zvirdaniel.smarthome.services;
 
 import cz.zvirdaniel.smarthome.Application;
-import cz.zvirdaniel.smarthome.models.FanSpeed;
-import cz.zvirdaniel.smarthome.models.GreeData;
-import cz.zvirdaniel.smarthome.models.GreeDevice;
-import cz.zvirdaniel.smarthome.models.GreeDeviceBinding;
-import cz.zvirdaniel.smarthome.models.GreeDeviceDetail;
-import cz.zvirdaniel.smarthome.models.GreeDeviceStatus;
-import cz.zvirdaniel.smarthome.models.HorizontalSwingDirection;
-import cz.zvirdaniel.smarthome.models.OperationMode;
-import cz.zvirdaniel.smarthome.models.TemperatureUnit;
-import cz.zvirdaniel.smarthome.models.VerticalSwingDirection;
-import cz.zvirdaniel.smarthome.models.contents.GreeStatusContent;
-import cz.zvirdaniel.smarthome.models.requests.GreeCommandRequest;
-import cz.zvirdaniel.smarthome.models.requests.GreeStatusRequest;
-import lombok.Getter;
+import cz.zvirdaniel.smarthome.models.gree.GreeBinding;
+import cz.zvirdaniel.smarthome.models.gree.GreeCommandRequest;
+import cz.zvirdaniel.smarthome.models.gree.GreeData;
+import cz.zvirdaniel.smarthome.models.gree.GreeDevice;
+import cz.zvirdaniel.smarthome.models.gree.GreeDeviceDetail;
+import cz.zvirdaniel.smarthome.models.gree.GreeDeviceStatus;
+import cz.zvirdaniel.smarthome.models.gree.GreeStatusContent;
+import cz.zvirdaniel.smarthome.models.gree.GreeStatusRequest;
+import cz.zvirdaniel.smarthome.models.gree.enums.FanSpeed;
+import cz.zvirdaniel.smarthome.models.gree.enums.HorizontalSwingDirection;
+import cz.zvirdaniel.smarthome.models.gree.enums.OperationMode;
+import cz.zvirdaniel.smarthome.models.gree.enums.TemperatureUnit;
+import cz.zvirdaniel.smarthome.models.gree.enums.VerticalSwingDirection;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -36,84 +34,100 @@ import java.util.concurrent.TimeUnit;
 public class GreeService {
     private final GreeCommunicationService communicationService;
 
-    @Getter
-    private final Set<GreeDevice> greeDevices = new HashSet<>();
+    public Collection<GreeDevice> scanNetworkDevices() {
+        return communicationService.scanAllNetworkDevices();
+    }
 
-    public GreeDevice[] getDeviceArray(@Nullable String mac) {
-        if (greeDevices.isEmpty()) {
-            throw new RuntimeException("No available devices!");
-        }
+    public boolean isConnected() {
+        return communicationService.isConnected();
+    }
 
+    public Collection<GreeDevice> getConnectedDevices() {
+        return communicationService.getConnectedDevices();
+    }
+
+    public Collection<GreeDevice> getTargetDevices(@Nullable String mac) {
         if (StringUtils.hasText(mac)) {
-            final GreeDevice[] devices = greeDevices.stream()
-                                                    .filter(it -> mac.equalsIgnoreCase(it.getMacAddress()))
-                                                    .toArray(GreeDevice[]::new);
-            if (ArrayUtils.getLength(devices) != 1) {
+            final Set<GreeDevice> devices = this.getConnectedDevices().stream()
+                                                .filter(it -> mac.equalsIgnoreCase(it.macAddress()))
+                                                .collect(Collectors.toUnmodifiableSet());
+            if (devices.size() != 1) {
                 throw new RuntimeException("Device with MAC " + mac + " not found!");
             }
 
             return devices;
         } else {
-            return greeDevices.toArray(GreeDevice[]::new);
+            return this.getConnectedDevices();
         }
     }
 
-    public void changeOperationMode(OperationMode mode) {
+    public List<GreeDeviceDetail> changeOperationMode(OperationMode mode) {
         log.info("Changing operation mode on all devices to {}", mode);
-        final GreeDevice[] devices = this.getDeviceArray(null);
+        final Collection<GreeDevice> devices = this.getTargetDevices(null);
         this.changeStatus(GreeDeviceStatus.builder()
                                           .operationMode(mode)
                                           .xFan(mode == OperationMode.COOL || mode == OperationMode.DRY)
                                           .build(), devices);
+        return this.getStatus(devices);
     }
 
-    public void changePowerStatus(@Nullable String mac, boolean online) {
-        final GreeDevice[] devices = this.getDeviceArray(mac);
+    public List<GreeDeviceDetail> changePowerStatus(@Nullable String mac, boolean online) {
+        final Collection<GreeDevice> devices = this.getTargetDevices(mac);
         log.info("Turning {} {}", online ? "on" : "off", devices);
         this.changeStatus(GreeDeviceStatus.builder()
                                           .power(online)
                                           .build(), devices);
+        return this.getStatus(devices);
     }
 
-    public void changeTemperature(@Nullable String mac, Integer temperature) {
-        final GreeDevice[] devices = this.getDeviceArray(mac);
+    public List<GreeDeviceDetail> changeTemperature(@Nullable String mac, Integer temperature) {
+        final Collection<GreeDevice> devices = this.getTargetDevices(mac);
         log.info("Setting temperature to {}C on {}", temperature, devices);
         this.changeStatus(GreeDeviceStatus.builder()
                                           .temperature(temperature)
                                           .temperatureUnit(TemperatureUnit.CELSIUS)
                                           .build(), devices);
+        return this.getStatus(devices);
     }
 
-    public void changeFanSpeed(@Nullable String mac, FanSpeed fanSpeed) {
-        final GreeDevice[] devices = this.getDeviceArray(mac);
+    public List<GreeDeviceDetail> changeFanSpeed(@Nullable String mac, FanSpeed fanSpeed) {
+        final Collection<GreeDevice> devices = this.getTargetDevices(mac);
         log.info("Setting fan speed to {} on {}", fanSpeed, devices);
         this.changeStatus(GreeDeviceStatus.builder()
                                           .fanSpeed(fanSpeed)
                                           .build(), devices);
+        return this.getStatus(devices);
     }
 
-    public void changeSwing(@Nullable String mac, HorizontalSwingDirection horizontalSwingDirection, VerticalSwingDirection verticalSwingDirection) {
-        final GreeDevice[] devices = this.getDeviceArray(mac);
+    public List<GreeDeviceDetail> changeSwing(@Nullable String mac, HorizontalSwingDirection horizontalSwingDirection, VerticalSwingDirection verticalSwingDirection) {
+        final Collection<GreeDevice> devices = this.getTargetDevices(mac);
         log.info("Setting swing to horizontal {} and vertical {} on {}", horizontalSwingDirection, verticalSwingDirection, devices);
         this.changeStatus(GreeDeviceStatus.builder()
                                           .horizontalSwingDirection(horizontalSwingDirection)
                                           .verticalSwingDirection(verticalSwingDirection)
                                           .build(), devices);
+        return this.getStatus(devices);
     }
 
-    public void changeStatus(GreeDeviceStatus status, GreeDevice... devices) {
+    public void changeStatus(GreeDeviceStatus status, Collection<GreeDevice> devices) {
         Objects.requireNonNull(devices);
         for (final var device : devices) {
-            final GreeDeviceBinding binding = communicationService.getBinding(device);
+            final GreeBinding binding = communicationService.getBinding(device);
             final GreeCommandRequest request = new GreeCommandRequest(status, binding);
             communicationService.sendRequest(device, request);
         }
     }
 
+    public List<GreeDeviceDetail> getStatus(Collection<GreeDevice> devices) {
+        return devices.stream()
+                      .map(this::getStatus)
+                      .collect(Collectors.toList());
+    }
+
     @SneakyThrows
     public GreeDeviceDetail getStatus(GreeDevice device) {
         log.info("Fetching status of device {}", device);
-        final GreeDeviceBinding binding = communicationService.getBinding(device);
+        final GreeBinding binding = communicationService.getBinding(device);
         final String rawResponse = communicationService.sendRequest(device, new GreeStatusRequest(binding));
         final GreeData response = Application.OBJECT_MAPPER.readValue(rawResponse, GreeData.class);
         final String rawContent = binding.decryptContent(response.getEncryptedContent());
@@ -129,10 +143,5 @@ public class GreeService {
 
         final GreeDeviceStatus status = Application.OBJECT_MAPPER.convertValue(data, GreeDeviceStatus.class);
         return new GreeDeviceDetail(device, status);
-    }
-
-    @Scheduled(fixedRate = 30 * 60, timeUnit = TimeUnit.SECONDS)
-    private void addNetworkDevices() {
-        this.greeDevices.addAll(communicationService.searchAllNetworkDevices());
     }
 }

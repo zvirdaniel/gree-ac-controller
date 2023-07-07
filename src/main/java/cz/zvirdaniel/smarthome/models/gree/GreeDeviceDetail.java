@@ -1,5 +1,10 @@
-package cz.zvirdaniel.smarthome.models;
+package cz.zvirdaniel.smarthome.models.gree;
 
+import cz.zvirdaniel.smarthome.models.gree.enums.FanSpeed;
+import cz.zvirdaniel.smarthome.models.gree.enums.HorizontalSwingDirection;
+import cz.zvirdaniel.smarthome.models.gree.enums.OperationMode;
+import cz.zvirdaniel.smarthome.models.gree.enums.TemperatureUnit;
+import cz.zvirdaniel.smarthome.models.gree.enums.VerticalSwingDirection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -26,7 +31,10 @@ public class GreeDeviceDetail {
     @Schema(description = "mode of operation")
     private OperationMode operationMode;
 
-    @Schema(description = "temperature in temperature unit")
+    @Schema(description = "current room temperature in temperature unit")
+    private Integer temperatureSensor;
+
+    @Schema(description = "target room temperature in temperature unit")
     private Integer temperature;
 
     @Schema(description = "unit for temperature")
@@ -69,13 +77,14 @@ public class GreeDeviceDetail {
     private Boolean winterMaintenanceMode;
 
     public GreeDeviceDetail(GreeDevice device, GreeDeviceStatus status) {
-        this.name = device.getName();
-        this.version = device.getVersion();
-        this.macAddress = device.getMacAddress();
-        this.address = device.getAddress().getHostAddress();
-        this.port = device.getPort();
+        this.name = device.name();
+        this.version = device.version();
+        this.macAddress = device.macAddress();
+        this.address = device.address().getHostAddress();
+        this.port = device.port();
         this.power = status.getPower();
         this.operationMode = status.getOperationMode();
+        this.temperatureSensor = status.getTemperatureSensor();
         this.temperature = status.getTemperature();
         this.temperatureUnit = status.getTemperatureUnit();
         this.fanSpeed = status.getFanSpeed();

@@ -1,4 +1,4 @@
-package cz.zvirdaniel.smarthome.models.requests;
+package cz.zvirdaniel.smarthome.models.gree;
 
 import java.io.Serializable;
 

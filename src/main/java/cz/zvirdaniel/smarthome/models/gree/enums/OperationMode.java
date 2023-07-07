@@ -1,4 +1,4 @@
-package cz.zvirdaniel.smarthome.models;
+package cz.zvirdaniel.smarthome.models.gree.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
@@ -6,18 +6,17 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum FanSpeed implements StatusEnum {
+public enum OperationMode implements StatusEnum {
     AUTO(0),
-    LOW(1),
-    MEDIUM_LOW(2),
-    MEDIUM(3),
-    MEDIUM_HIGH(4),
-    HIGH(5);
+    COOL(1),
+    DRY(2),
+    FAN(3),
+    HEAT(4);
 
     private final int status;
 
     @JsonCreator
-    public static FanSpeed forStatus(Integer status) {
+    public static OperationMode forStatus(Integer status) {
         if (status != null) {
             for (final var value : values()) {
                 if (value.getStatus() == status) {
